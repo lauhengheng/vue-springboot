@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lauheng.dao.TeamUserMapper">
+
+        <!-- 通用查询映射结果 -->
+        <resultMap id="BaseResultMap" type="com.lauheng.model.TeamUser">
+                    <id column="id" property="id"/>
+                    <result column="username" property="username"/>
+                    <result column="realname" property="realname"/>
+                    <result column="sex" property="sex"/>
+                    <result column="tel" property="tel"/>
+                    <result column="email" property="email"/>
+                    <result column="image" property="image"/>
+                    <result column="join_time" property="joinTime"/>
+                    <result column="team_id" property="teamId"/>
+                    <result column="password" property="password"/>
+        </resultMap>
+
+        <!-- 通用查询结果列 -->
+        <sql id="Base_Column_List">
+            id, username, realname, sex, tel, email, image, join_time, team_id, password
+        </sql>
+    
+        <resultMap id="queryTeamUserListMap"
+                   type="com.lauheng.model.TeamUser"
+                   extends="BaseResultMap">
+         <association property="team" javaType="com.lauheng.model.Team">
+             <id column="id" property="id"/>
+             <result column="tname" property="name"/>
+         </association>
+        </resultMap>
+
+
+        <select id="queryTeamUserList"
+                resultMap="queryTeamUserListMap">
+            SELECT
+                tu.*, t. NAME AS tname
+            FROM
+                team_user tu
+            LEFT JOIN team t ON t.id = tu.team_id
+        <where>
+            <if test="tel !=null and tel!=''">
+                and tel like '%${tel}%'
+            </if>
+                                    
+            <if test="email !=null and email!=''">
+                and email like '%${email}%'
+            </if>
+                and t.user_id=#{userId}
+            
+        </where>
+
+        </select>
+
+        <select id="queryTeamUserByTeamIdAndTel"
+                resultType="com.lauheng.model.TeamUser">
+            SELECT
+                *
+            FROM
+                team_user tu
+            WHERE
+                tu.tel=#{tel}
+              AND tu.team_id=#{teamId}
+
+        </select>
+
+
+
+    <select id="queryByUsernameAndPwd"
+            resultType="com.lauheng.model.TeamUser">
+        select * from team_user tu
+        where tu.realname=#{username}
+        and tu.`password`= #{password}
+
+    </select>
+
+</mapper>
